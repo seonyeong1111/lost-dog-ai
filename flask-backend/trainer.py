@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import requests
 from pathlib import Path
+import os
 
 app = Flask(__name__)
 
@@ -32,9 +33,17 @@ def download_images(target_id):
         try:
             img_res = requests.get(url) # ① 이미지 URL로 요청 보내기
             img_res.raise_for_status() # ② 응답 상태 확인 (오류 발생 시 예외)
-            with open(label_dir / f"{i}.jpg", "wb") as f: # ③ 파일 열기 (바이너리 쓰기 모드)
-                f.write(img_res.content) # ④ 이미지 내용 저장
+
+            #  확장자 자동 추출
+            extension = os.path.splitext(url.split("?")[0])[1]  # URL에서 확장자 추출 (쿼리스트링 제거)
+            if not extension:  
+                extension = ".jpg"  # 확장자 없으면 기본값 jpg
+            
+            #  확장자 반영해서 저장
+            with open(label_dir / f"{i}{extension}", "wb") as f:
+                f.write(img_res.content)
             downloaded_count += 1
+
         except Exception as e:
             print(f"Error downloading image {url}: {e}")
     if downloaded_count == 0:

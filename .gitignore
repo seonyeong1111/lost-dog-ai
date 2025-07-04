@@ -57,3 +57,6 @@ flask-backend/*.pyc
 
 #이미지/영상 다운로드 데이터
 flask-backend/train_data/
+
+#파이썬 캐시 파일
+__pycache__/

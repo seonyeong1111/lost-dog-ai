@@ -1,6 +1,7 @@
 const functions = require("firebase-functions");
 const fetch = require("cross-fetch");
 
+//수정 시 발동 안 함 user폴더 자체가 다시 생기지만 않게 하면 됨
 exports.onNewTargetUpload = functions.database
   .ref("/animalList/{targetId}")
   .onCreate(async (snapshot, context) => {
