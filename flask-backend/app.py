@@ -27,7 +27,8 @@ def train():
     if target_id is None:
         return jsonify({"error": "targetId is required"}), 400
 
-    success, msg = run_training_pipeline(target_id) 
+    success, msg = run_training_pipeline(target_id)
+
     if not success:
         return jsonify({"error": msg}), 500
 
