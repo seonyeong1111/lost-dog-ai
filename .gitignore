@@ -67,3 +67,6 @@ __pycache__/
 #모델 학습 시 생성 파일
 animal_detection/
 generated_animal_dataset/
+
+#키파일
+socket-server/dongmul-firebase-adminsdk-fbsvc-02ae7789b0.json
