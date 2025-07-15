@@ -47,7 +47,7 @@ def predict_api():
         target_id = predict_image_from_url()
         # 업데이트할 데이터 구성
         update_data = {
-            "status": "find",
+            "find": "1",
             "findGPS": "울산 남구 무거동"
             # 또는 "gps": {"lat": 35.538, "lng": 129.311}
         }
