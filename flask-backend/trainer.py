@@ -7,6 +7,7 @@ import shutil
 from ultralytics import YOLO
 import yaml
 import torch
+import json
 
 app = Flask(__name__)
 
@@ -29,6 +30,7 @@ def download_images(target_id):
     label_dir.mkdir(parents=True, exist_ok=True) #./train_data가 없어도 자동으로 생성, exist_ok=True: 이미 폴더가 존재하면 에러 없이 그냥 넘어감
 
     downloaded_count = 0
+    num_files = int(num_files)
 
     for i in range(1, num_files + 1):
         url_res = requests.get(f"{base_url}/url{i}.json")
@@ -36,6 +38,10 @@ def download_images(target_id):
             print(f"Failed to get url{i}")
             continue
         url = url_res.json()
+        try:
+            cleaned_url = json.loads(url)  # 이스케이프 문자 풀기 시도
+        except json.JSONDecodeError:
+            cleaned_url = url  # 이미 정상 문자열인 경우 그대로 사용
         try:
             img_res = requests.get(url) # ① 이미지 URL로 요청 보내기
             img_res.raise_for_status() # ② 응답 상태 확인 (오류 발생 시 예외)
