@@ -17,6 +17,12 @@ app = Flask(__name__)
 @app.route("/")
 def home():
     return render_template("index.html")
+    
+
+#헬스 체크
+@app.route("/health")
+def health_check():
+    return jsonify({"status": "ok"}), 200
 
 # 학습을 위한 API
 #이미지 다운로드까지만 구현했습니다 trainer.py에 모델 학습 코드 첨가해주시면 됩니다
@@ -65,5 +71,5 @@ def predict_api():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)
 

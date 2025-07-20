@@ -41,7 +41,7 @@ def update_realtime_db(label, findURL):
     update_data = {
         'find': 1,
         'findGPS': '울산광역시 남구 대학로 93',
-        'findURL': findURL
+        'findURL': str(findURL)
     }
     ref.update(update_data)
     print(f"✅ Realtime DB 업데이트 완료: {label} -> {update_data}")
@@ -115,7 +115,7 @@ def handle_client(client_socket, client_address, model):
 # 서버 (추론을 수행하는 컴퓨터)
 # =====================================
 
-def run_server(host='0.0.0.0', port=8888, model_path = '../flask-backend/animal_detection/train/weights/best.pt'):
+def run_server(host='0.0.0.0', port=8888, model_path = '../flask-backend/best.pt'):
     uploaded_to_db = set()
     """추론 서버 실행"""
     
@@ -126,7 +126,7 @@ def run_server(host='0.0.0.0', port=8888, model_path = '../flask-backend/animal_
     if not os.path.exists(model_path):
         print(f"❌ 모델 파일을 찾을 수 없습니다: {model_path}")
         print("기본 YOLOv8s 모델을 사용합니다...")
-        model_path = '../flask-backend/yolov8s.pt'
+        model_path = '/app/data/yolov8s.pt'
     
     try:
         model = YOLO(model_path)

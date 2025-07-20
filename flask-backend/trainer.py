@@ -8,10 +8,11 @@ from ultralytics import YOLO
 import yaml
 import torch
 import json
+from ultralytics.utils import DEFAULT_CFG
 
 app = Flask(__name__)
 
-TRAIN_DIR = "./train_data"
+TRAIN_DIR = "data/train_data"
 
 #이미지 다운로드 함수
 # ./train_data/target{targetId}/{1부터 차례대로}.jpg 구조로 저장하고 "./train_data/target{targetId}" 경로 반환
@@ -43,7 +44,7 @@ def download_images(target_id):
         except json.JSONDecodeError:
             cleaned_url = url  # 이미 정상 문자열인 경우 그대로 사용
         try:
-            img_res = requests.get(url) # ① 이미지 URL로 요청 보내기
+            img_res = requests.get(cleaned_url) # ① 이미지 URL로 요청 보내기
             img_res.raise_for_status() # ② 응답 상태 확인 (오류 발생 시 예외)
 
             #  확장자 자동 추출
@@ -57,7 +58,7 @@ def download_images(target_id):
             downloaded_count += 1
 
         except Exception as e:
-            print(f"Error downloading image {url}: {e}")
+            print(f"Error downloading image {cleaned_url}: {e}")
     if downloaded_count == 0:
         return False, "All downloads failed"
 
@@ -185,7 +186,7 @@ def fixed_train():
     print(f"사용 디바이스: {device}")
     
     # 데이터셋 경로
-    dataset_folder = "generated_animal_dataset"
+    dataset_folder = "data/generated_animal_dataset"
     
     try:
         # 1. 데이터셋 구조 확인
@@ -202,9 +203,9 @@ def fixed_train():
         yaml_path = fix_data_yaml(dataset_folder)
         
         # 4. 모델 로드
-        model = YOLO('yolov8s.pt')
+        model = YOLO('data/yolov8s.pt')
         
-        # 5. 학습 시작
+        # 5. 학습 시작S
         print("\n" + "="*50)
         print("학습 시작...")
         print("="*50)
@@ -215,7 +216,7 @@ def fixed_train():
             imgsz=640,
             batch=16,
             device=device,
-            project='animal_detection',
+            project='data/animal_detection',
             name='train',
             exist_ok=True,
             patience=50,
@@ -234,7 +235,7 @@ def fixed_train():
         
         # 6. 검증
         print("\n검증 시작...")
-        best_model = YOLO('animal_detection/train/weights/best.pt')
+        best_model = YOLO('data/animal_detection/train/weights/best.pt')
         val_results = best_model.val(data=yaml_path)
         
         print("검증 완료!")
@@ -250,7 +251,7 @@ def fixed_train():
 
 def debug_dataset_paths():
     """데이터셋 경로 디버깅"""
-    dataset_folder = "generated_animal_dataset"
+    dataset_folder = "data/generated_animal_dataset"
     dataset_path = Path(dataset_folder)
     
     print("=" * 50)
@@ -294,7 +295,7 @@ def debug_dataset_paths():
 
 def manual_fix_yaml():
     """수동으로 data.yaml 파일 수정"""
-    dataset_folder = "generated_animal_dataset"
+    dataset_folder = "data/generated_animal_dataset"
     dataset_path = Path(dataset_folder)
     yaml_path = dataset_path / 'data.yaml'
     
@@ -333,7 +334,7 @@ def manual_fix_yaml():
 
 
 class AnimalDatasetGenerator:
-    def __init__(self, model_path, main_folder, output_folder="generated_dataset"):
+    def __init__(self, model_path, main_folder, output_folder="data/generated_dataset"):
         """
         동물 감지 기반 자동 데이터셋 생성기
         
@@ -342,6 +343,7 @@ class AnimalDatasetGenerator:
             main_folder (str): target1, target2 등의 폴더가 있는 메인 폴더 경로
             output_folder (str): 생성될 데이터셋 폴더 이름
         """
+    
         self.model = YOLO(model_path)
         self.main_folder = Path(main_folder)
         self.output_folder = Path(output_folder)
@@ -612,9 +614,10 @@ def train_model(data_path):
     # 임시 테스트 코드입니다
     print(f"📦 Training model with data in {data_path}")
     # 사용 예제
-    model_path = "animal.pt"  # 학습된 animal 모델 경로
-    main_folder = "./train_data"  # target1, target2 폴더가 있는 메인 폴더
-    output_folder = "generated_animal_dataset"  # 생성될 데이터셋 폴더
+    model_path = str(Path("./animal.pt").resolve())
+    #model_path = "./animal.pt"  # 학습된 animal 모델 경로
+    main_folder = "data/train_data"  # target1, target2 폴더가 있는 메인 폴더
+    output_folder = "data/generated_animal_dataset"  # 생성될 데이터셋 폴더
     
     # 데이터셋 생성기 초기화
     generator = AnimalDatasetGenerator(model_path, main_folder, output_folder)

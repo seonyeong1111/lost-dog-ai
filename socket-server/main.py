@@ -38,8 +38,14 @@ def main():
         local_ip = get_local_ip()
         print(f"🌐 서버 IP 주소: {local_ip}")
         print("클라이언트에서 이 IP로 연결하세요")
-        
-        model_path = '../flask-backend/animal_detection/train/weights/best.pt'
+
+        #로컬용
+        #model_path = '../flask-backend/app/animal_detection/train/weights/best.pt'
+        #도커배포용
+        #model_path = '/app/data/animal_detection/train/weights/best.pt'
+        #임시용
+        model_path = '../flask-backend/best.pt'
+
         run_server(model_path=model_path)
         
     elif mode == "client":
